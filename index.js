@@ -28,6 +28,9 @@ async function run() {
     const serviceCollection= client.db('carDoctor').collection('services');
     const bookingCollection = client.db('carDoctor').collection('bookings')
 
+
+    // services
+
     app.get('/services', async(req,res)=>{
         const cursor = serviceCollection.find();
         const result = await cursor.toArray();
@@ -44,6 +47,9 @@ async function run() {
         res.send(result);
     })
 
+
+    // booking service
+
     app.get('/bookings' ,async(req,res)=>{
         let query = {};
         if(req.query?.email){
@@ -56,6 +62,14 @@ async function run() {
         const booking = req.body;
         const result = await bookingCollection.insertOne(booking);
         res.send(result);
+    })
+    app.patch('/bookings/:id', async(req,res)=>{
+        const id = req.params.id;
+        const query = {_id : new ObjectId(id)};
+        const options = { upsert: true };
+        const updateBooking = req.body;
+        const result = await bookingCollection.updateOne(query,updateBooking,options)
+        res.send(result)
     })
     app.delete('/bookings/:id', async(req,res)=>{
         const id = req.params.id;

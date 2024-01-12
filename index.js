@@ -13,6 +13,7 @@ app.use(cors({
     credentials: true,
 }))
 app.use(express.json())
+app.use(cookieParser())
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vcouptk.mongodb.net/?retryWrites=true&w=majority`;
@@ -74,6 +75,7 @@ async function run() {
             if (req.query?.email) {
                 query = { email: req.query.email }
             }
+            console.log('token', req.cookies.token)
             const result = await bookingCollection.find(query).toArray();
             res.send(result);
         })

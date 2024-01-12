@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 
 // middlewar
 app.use(cors({
-    origin: ['http://localhost:5173','https://car-doctor-71.web.app'],
+    origin: ['http://localhost:5173', 'https://car-doctor-71.web.app'],
     credentials: true,
 }))
 app.use(express.json())
@@ -36,16 +36,15 @@ async function run() {
 
 
         app.post('/jwt', async (req, res) => {
-            const user = req.body;
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+            const user = req.body;            
+            const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '1h'})
 
-            res
-                .cookie('token', token, {
-                    httpOnly: true,
-                    secure: false,
-                    sameSite: 'none'
-                })
-                .send({ seccess: true })
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: false,
+                sameSite: 'none'
+            })
+            res.send({ seccess: true })
         })
 
 
@@ -75,7 +74,7 @@ async function run() {
             if (req.query?.email) {
                 query = { email: req.query.email }
             }
-            console.log('token', req.cookies.token)
+            
             const result = await bookingCollection.find(query).toArray();
             res.send(result);
         })

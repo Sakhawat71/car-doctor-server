@@ -9,7 +9,8 @@ const port = process.env.PORT || 5000;
 
 // middlewar
 app.use(cors({
-    origin: ['http://localhost:5173/login','https://car-doctor-71.web.app/']
+    origin: ['http://localhost:5173/login','https://car-doctor-71.web.app/'],
+    credentials: true,
 }))
 app.use(express.json())
 

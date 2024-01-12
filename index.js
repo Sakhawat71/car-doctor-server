@@ -8,7 +8,9 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 // middlewar
-app.use(cors())
+app.use(cors({
+    origin: ['http://localhost:5173/login']
+}))
 app.use(express.json())
 
 
@@ -31,17 +33,17 @@ async function run() {
         const bookingCollection = client.db('carDoctor').collection('bookings')
 
 
-        app.post('/jwt', async(req,res)=>{
+        app.post('/jwt', async (req, res) => {
             const user = req.body;
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET ,{expiresIn: '1h'});
-            // console.log(token)
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+
             res
-            .cookie('token',token,{
-                httpOnly: true,
-                secure: false,
-                sameSite: 'none'
-            })
-            .send({seccess: true})
+                .cookie('token', token, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: 'none'
+                })
+                .send({ seccess: true })
         })
 
 
@@ -84,7 +86,7 @@ async function run() {
         app.patch('/bookings/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
-            
+
             const updateBooking = req.body;
             const updateDoc = {
                 $set: {
@@ -95,7 +97,7 @@ async function run() {
             const result = await bookingCollection.updateOne(filter, updateDoc)
             res.send(result)
         })
-        
+
         app.delete('/bookings/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };

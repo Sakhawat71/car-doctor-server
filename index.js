@@ -16,10 +16,21 @@ app.use(express.json())
 app.use(cookieParser())
 
 // custom middlewar
-const logger = async(req,res,next)=>{
-    console.log('colled form: ',req.host,req.originalUrl)
-    next()
-}
+// const logger = async (req, res, next) => {
+//     console.log('colled form: ', req.host, req.originalUrl)
+//     next()
+// }
+
+const verifyToken = async (req, res, next) => {
+    
+    const token = req.cookies?.token;
+    console.log('Received token:', token);
+    if (!token) {
+        return res.status(401).send({ message: 'forbidden' });
+    }
+    next();
+};
+
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vcouptk.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -41,17 +52,19 @@ async function run() {
 
 
         app.post('/jwt', async (req, res) => {
-            const user = req.body;            
-            const token = jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{expiresIn: '1h'})
+            
+            const user = req.body;
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: '1h'
+            });
 
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: false,
-                sameSite: 'none'
-                
-            }).redirect('/main')
-            res.send({ seccess: true })
-        })
+            res
+                .cookie('token', token, {
+                    httpOnly: true,
+                    secure: false
+                })
+                .send({ success: true })
+        });
 
 
         // services
@@ -75,13 +88,13 @@ async function run() {
 
         // booking service
 
-        app.get('/bookings', logger, async (req, res) => {
+        app.get('/bookings', verifyToken, async (req, res) => {
             let query = {};
-            console.log(req.cookies)
+            // console.log('get cookies', req.cookies.token)
             if (req.query?.email) {
                 query = { email: req.query.email }
             }
-            
+
             const result = await bookingCollection.find(query).toArray();
             res.send(result);
         })

@@ -15,6 +15,11 @@ app.use(cors({
 app.use(express.json())
 app.use(cookieParser())
 
+// custom middlewar
+const logger = async(req,res,next)=>{
+    console.log('colled form: ',req.host,req.originalUrl)
+    next()
+}
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vcouptk.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -43,7 +48,8 @@ async function run() {
                 httpOnly: true,
                 secure: false,
                 sameSite: 'none'
-            })
+                
+            }).redirect('/main')
             res.send({ seccess: true })
         })
 
@@ -69,8 +75,9 @@ async function run() {
 
         // booking service
 
-        app.get('/bookings', async (req, res) => {
+        app.get('/bookings', logger, async (req, res) => {
             let query = {};
+            console.log(req.cookies)
             if (req.query?.email) {
                 query = { email: req.query.email }
             }

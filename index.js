@@ -16,19 +16,36 @@ app.use(express.json())
 app.use(cookieParser())
 
 // custom middlewar
+
+
 // const logger = async (req, res, next) => {
 //     console.log('colled form: ', req.host, req.originalUrl)
 //     next()
 // }
 
 const verifyToken = async (req, res, next) => {
-    
+
     const token = req.cookies?.token;
-    console.log('Received token:', token);
+
+    // console.log('Received token as a middelwar:', token);
+    
     if (!token) {
         return res.status(401).send({ message: 'forbidden' });
     }
-    next();
+
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+
+
+        if (err) {
+            return res.status(401).send({ message: "forbidden" })
+        }
+
+        // console.log('error' ,err)
+        // console.log('decoded value: ', decoded)
+
+        req.user = decoded;
+        next()
+    })
 };
 
 
@@ -51,11 +68,12 @@ async function run() {
         const bookingCollection = client.db('carDoctor').collection('bookings')
 
 
+        // auth 
         app.post('/jwt', async (req, res) => {
-            
+
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: '1h'
+                expiresIn: '2d'
             });
 
             res
@@ -90,10 +108,19 @@ async function run() {
 
         app.get('/bookings', verifyToken, async (req, res) => {
             let query = {};
-            // console.log('get cookies', req.cookies.token)
+
             if (req.query?.email) {
                 query = { email: req.query.email }
             }
+            if (req.query?.email !== req.user.email) {
+
+                return res.status(403).send({ message: "Forbidden" })
+            }
+
+            // console.log(req.query?.email)
+            // console.log(req.user.email)
+            // console.log('we get decoded data in bookings :'  ,req.user)
+            // console.log('get cookies', req.cookies.token)
 
             const result = await bookingCollection.find(query).toArray();
             res.send(result);

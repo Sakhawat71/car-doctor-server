@@ -79,7 +79,9 @@ async function run() {
             res
                 .cookie('token', token, {
                     httpOnly: true,
-                    secure: false
+                    secure: false,
+                    // sameSite: 'none'
+                    //dont use same site : if you use sameSite , con't get token in cookies
                 })
                 .send({ success: true })
         });

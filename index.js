@@ -9,7 +9,10 @@ const port = process.env.PORT || 5000;
 
 // middlewar
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://car-doctor-71.web.app'],
+    origin: [
+        // 'http://localhost:5173',
+        'https://car-doctor-71.web.app'
+    ],
     credentials: true,
 }))
 app.use(express.json())
@@ -25,7 +28,7 @@ app.use(cookieParser())
 
 const verifyToken = async (req, res, next) => {
     const token = req?.cookies?.token;
-    
+
     if (!token) {
         return res.status(401).send({ message: 'unauthorized assess' })
     }
@@ -35,7 +38,7 @@ const verifyToken = async (req, res, next) => {
         if (err) {
             return res.status(401).send({ message: 'unauthorized access' })
         }
-        
+
         req.user = decoded;
         next();
     })
@@ -74,7 +77,7 @@ async function run() {
                     httpOnly: true,
                     secure: false,
                 })
-                .send({ success: true },token)
+                .send({ success: true }, token)
         })
 
         app.post('/logout', async (req, res) => {
@@ -106,8 +109,8 @@ async function run() {
         app.get('/bookings', verifyToken, async (req, res) => {
             let query = {};
 
-            if(req.query.email !== req.user?.email){
-                return res.status(403).send({message: 'Forbidden Access'})
+            if (req.query.email !== req.user?.email) {
+                return res.status(403).send({ message: 'Forbidden Access' })
             }
 
             if (req.query?.email) {

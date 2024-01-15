@@ -22,33 +22,9 @@ app.use(cookieParser())
 //     next()
 // }
 
-// const verifyToken = async (req, res, next) => {
-
-//     const token = req.cookies?.token;
-
-//     // console.log('Received token as a middelwar:', token);
-
-//     if (!token) {
-//         return res.status(401).send({ message: 'forbidden' });
-//     }
-
-//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-
-
-//         if (err) {
-//             return res.status(401).send({ message: "forbidden" })
-//         }
-
-//         // console.log('error' ,err)
-//         // console.log('decoded value: ', decoded)
-
-//         req.user = decoded;
-//         next()
-//     })
-// };
 
 const verifyToken = async (req, res, next) => {
-    const token = req.cookies?.token;
+    const token = req?.cookies?.token;
     
     if (!token) {
         return res.status(401).send({ message: 'unauthorized assess' })
@@ -98,7 +74,7 @@ async function run() {
                     httpOnly: true,
                     secure: false,
                 })
-                .send({ success: true })
+                .send({ success: true },token)
         })
 
         app.post('/logout', async (req, res) => {

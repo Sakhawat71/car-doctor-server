@@ -11,7 +11,8 @@ const port = process.env.PORT || 5000;
 app.use(cors({
     origin: [
         'http://localhost:5173',
-        'https://car-doctor-71.web.app'
+        'https://car-doctor-71.web.app',
+        'https://car-doctor-71.firebaseapp.com'
     ],
     credentials: true,
 }))
@@ -76,6 +77,7 @@ async function run() {
                 .cookie('token', token, {
                     httpOnly: true,
                     secure: false,
+                    sameSite: 'none'
                 })
                 .send({ success: true })
         })

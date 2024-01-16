@@ -76,6 +76,7 @@ async function run() {
                 .cookie('token', token, {
                     httpOnly: true,
                     secure: false,
+                    sameSite: 'none' // should remove
                 })
                 .send({ success: true })
         })

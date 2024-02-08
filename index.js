@@ -70,7 +70,7 @@ async function run() {
 
         app.post('/jwt', async (req, res) => {
             const userEmail = req.body;
-            // console.log(userEmail)
+            console.log(userEmail)
             const token = jwt.sign(userEmail, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '24h' })
             // console.log(token)
             res
@@ -163,7 +163,7 @@ run().catch(console.dir);
 
 
 app.get("/", (req, res) => {
-    res.send("server running................")
+    res.send("car doctor server running................")
 })
 app.listen(port, () => {
     console.log(`server is running on port:${port}`)

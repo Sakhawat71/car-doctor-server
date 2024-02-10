@@ -70,7 +70,7 @@ async function run() {
 
         app.post('/jwt', async (req, res) => {
             const userEmail = req.body;
-            console.log(userEmail)
+            // console.log(userEmail)
             const token = jwt.sign(userEmail, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '24h' })
             // console.log(token)
             res
@@ -90,8 +90,22 @@ async function run() {
         // services
 
         app.get('/services', async (req, res) => {
-            const cursor = serviceCollection.find();
+
+            const priceSort = req.query.sort;
+            const search = req.query.search;
+
+            const query = {
+                title : { $regex: search, $options: 'i'}
+            }; 
+            const option = {
+                sort : {
+                    price : priceSort === 'asc' ? 1 : -1
+                }
+            }
+
+            const cursor = serviceCollection.find(query,option);
             const result = await cursor.toArray();
+            console.log(search)
             res.send(result)
         })
 
